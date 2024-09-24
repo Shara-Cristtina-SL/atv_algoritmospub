@@ -1,5 +1,5 @@
 import {mostre,get_number_inrange,get_number, limpar_tela,enter_para_continuar, get_text, positive_number} from '../quest/utils.js'
-import { chamar_sub_opcoes,adcionar_valores,remover_porvalor, resetar_vetor,embaralhar_vetor, contar_elementos,bubble_sort, buscar_maior_vetor_valor, buscar_maior_vetor_posicao, buscar_menor_vetor_valor, buscar_menor_vetor_posicao, somar_elementos, calcular_media_elementos, buscar_positivos, contar_positivos, buscar_negativos, contar_negativos, chamar_sub10_opcoes, salvar_vetor } from './vetor_funcionalidades.js'
+import { chamar_sub_opcoes,adcionar_valores,remover_porvalor,remover_porposicao, resetar_vetor,embaralhar_vetor, contar_elementos,bubble_sort, buscar_maior_vetor_valor, buscar_maior_vetor_posicao, buscar_menor_vetor_valor, buscar_menor_vetor_posicao, somar_elementos, calcular_media_elementos, buscar_positivos, contar_positivos, buscar_negativos, contar_negativos, chamar_sub10_opcoes, salvar_vetor, editar_porposicao } from './vetor_funcionalidades.js'
 
 function main(lista_vetor = []){
 
@@ -82,22 +82,32 @@ function main(lista_vetor = []){
         sub_opcao10_escolhida = get_number_inrange((opcoes),1,6)
  
         limpar_tela()
-        if(sub_opcao10_escolhida == 2){
+        if(sub_opcao10_escolhida == 1){
+            const fator = get_number('Digite o valor do fator a ser multiplicado pelo vetor:  ')
+            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,fator,0,0,0,0)
+
+        }else if(sub_opcao10_escolhida == 2){
             const expoente = get_number('Digite o expoente:  ')
-            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,expoente,0,0)
+            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,0,expoente,0,0,0)
 
         }else if(sub_opcao10_escolhida == 3){
             let fracao = get_text('Digite a fração:  ')
             fracao = fracao.split('/')
 
-            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,fracao,0,0,0)
+            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,0,0,fracao,0,0)
 
         }else if(sub_opcao10_escolhida == 4){
-            const valor_min = get_number('Digite o valor minimo:  ')
-            const valor_max = get_number('Digite o valor máximo:  ')
-            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,0,valor_min,valor_max)
+            const valor_min = positive_number('Digite o valor minimo:  ')
+            const valor_max = positive_number('Digite o valor máximo:  ')
+            lista_vetor = chamar_sub10_opcoes(sub_opcao10_escolhida,lista_vetor,0,0,0,valor_min,valor_max)
+
         }else if(sub_opcao10_escolhida == 5){
-            lista_vetor = bubble_sort(lista_vetor,true)
+            const reverse = get_number_inrange('Digite 1 para reverse e 0 para não:  ',0,1)
+            if(reverse==0){
+                lista_vetor = bubble_sort(lista_vetor,false,v=>Number(v))
+            }else{
+                lista_vetor = bubble_sort(lista_vetor,true,v=>Number(v))
+            }
         }else if(sub_opcao10_escolhida == 6){
             embaralhar_vetor(lista_vetor)
         }
@@ -106,11 +116,14 @@ function main(lista_vetor = []){
         const qtd_new_valores = positive_number('Digite quantos valores quer adcionar:  ')
         lista_vetor = adcionar_valores(lista_vetor, qtd_new_valores)
     }else if(opcao_escolhida == 12){
-        mostre(`Em andamento`)
+        const qtd_removidos = positive_number('Digite a quantidade de números a serem removidos:  ')
+        lista_vetor = remover_porvalor(lista_vetor, qtd_removidos)
     }else if(opcao_escolhida == 13){
-        mostre(`Em andamento`)
+        const qtd_removidos = positive_number('Digite a quantidade de números a serem removidos:  ')
+        lista_vetor = remover_porposicao(lista_vetor, qtd_removidos)
     }else if(opcao_escolhida == 14){
-        mostre(`Em andamento`)
+        const posicao = get_number('Digite o índice do valor a ser editado: ')
+        lista_vetor = editar_porposicao(lista_vetor,posicao)
     }else if(opcao_escolhida == 15){
         salvar_vetor(lista_vetor)
     }

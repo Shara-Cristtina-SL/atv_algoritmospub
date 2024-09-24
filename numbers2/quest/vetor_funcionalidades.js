@@ -1,5 +1,5 @@
 
-import {mostre,get_number_inrange, limpar_tela, positive_number,get_number, get_text} from './utils.js'
+import {mostre,get_number_inrange, limpar_tela, positive_number,get_number, get_text, enter_para_continuar} from './utils.js'
 import {readFileSync,writeFileSync} from 'fs'
 import {eh_positivo} from '../quest/vetor_utils.js'
 
@@ -89,7 +89,6 @@ export function contar_elementos(vetor){
 }
 
 export function buscar_maior_vetor_valor(vetor){
-    let elemento_anterior = vetor[0]
     let elemento_atual = vetor[0]
     let maior_elemento = vetor[0]
     const tamanho_vetor = contar_elementos(vetor)
@@ -125,7 +124,7 @@ export function buscar_maior_vetor_posicao(vetor){
 }
 
 export function buscar_menor_vetor_valor(vetor){
-    let elemento_anterior = vetor[0]
+
     let elemento_atual = vetor[0]
     let menor_elemento = buscar_maior_vetor_valor(vetor)
     const tamanho_vetor = contar_elementos(vetor)
@@ -141,7 +140,6 @@ export function buscar_menor_vetor_valor(vetor){
 }
 
 export function buscar_menor_vetor_posicao(vetor){
-    let elemento_anterior = vetor[0]
     let elemento_atual = vetor[0]
     let menor_elemento = buscar_maior_vetor_valor(vetor)
     const tamanho_vetor = contar_elementos(vetor)
@@ -248,7 +246,6 @@ export function atualizar_vetor_se(vetor,regra,criterio){
 
     return vetor_atualizado
 }
-
 export function embaralhar_vetor(vetor){
     for (let i = vetor.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -256,11 +253,11 @@ export function embaralhar_vetor(vetor){
     }
 }
 
-export function chamar_sub10_opcoes(sub_opcao,vetor,fracao,expoente,min,max){
+export function chamar_sub10_opcoes(sub_opcao,vetor,fator,expoente,fracao,min,max){
         let regra
 
     if(sub_opcao == 1){
-        regra = v=> v *2
+        regra = v=> v * fator
     
         vetor = atualizar_vetor(vetor, regra)
 
@@ -271,9 +268,6 @@ export function chamar_sub10_opcoes(sub_opcao,vetor,fracao,expoente,min,max){
     }else if(sub_opcao == 3){
         let numerador = Number( fracao[0] )
         let denominador = Number(fracao[1])
-
-        mostre(numerador)
-        mostre(denominador)
 
         let vetor_anterior = vetor
         vetor = []
@@ -289,43 +283,48 @@ export function chamar_sub10_opcoes(sub_opcao,vetor,fracao,expoente,min,max){
     }else if(sub_opcao == 4,min,max){
         const criterio = v => v < 0
 
-        regra = v => v = (Math.random()*((max - min + 1)))
+        regra = v => v = Math.floor(Math.random()*((max - min + 1)))+min
 
         vetor = atualizar_vetor_se(vetor,regra,criterio)
     }
     return vetor
 }
 
-export function bubble_sort(vetor, reverse ){
-    let qtd_elementos_a_ordenar = vetor.length - 1
-    let aux
-    const a_ordenar_inicial = qtd_elementos_a_ordenar
+export function bubble_sort(colecao, reverse=False, criterio = v=>v){
+    let ultima_pos_n_ordenada = colecao.length - 1 
+    let houve_troca = false
 
-    while (qtd_elementos_a_ordenar > 0){
-        for(let i = 0; i<= a_ordenar_inicial; i++){
-            vetor[i] = Number(vetor[i])
-            vetor[i+1] = Number(vetor[i+1])
+    while (ultima_pos_n_ordenada > 0){
+        let aux
+        houve_troca = false
+        for (let i = 0; i< ultima_pos_n_ordenada; i++){
             if (!reverse){
-                if ((vetor[i]) > (vetor[i+1])){
-                    aux = vetor[i]
-                    vetor[i] = vetor[i+1]
-                    vetor[i+1] = aux
-                }
+                if (criterio(colecao[i]) > criterio(colecao[i+1])){
+                    aux = colecao[i]
+                    colecao[i] = colecao[i+1]
+                    colecao[i+1] = aux
+                    houve_troca = true
+                }    
             }else{
-                if ((vetor[i]) < (vetor[i+1])){
-                    aux = vetor[i]
-                    vetor[i] = vetor[i+1]
-                    vetor[i+1] = aux
-                    
+                if (criterio(colecao[i]) < criterio(colecao[i+1])){
+                    aux = colecao[i]
+                    colecao[i] = colecao[i+1]
+                    colecao[i+1] = aux
+                    houve_troca = true
                 }
-            }    
-        qtd_elementos_a_ordenar --
-        
+            }        
+        }            
+        ultima_pos_n_ordenada--
+
+        if (!houve_troca) { // Se não houve troca, o array já está ordenado
+            mostre(`O vetor já está ordenado!`)
+
+            enter_para_continuar()
+            break; 
         }
     }
-return vetor
+    return colecao
 }
-
 export function adcionar_valores(vetor,qtd){
     let new_valor 
     for(let i = qtd; i>0;i--){
@@ -336,21 +335,53 @@ export function adcionar_valores(vetor,qtd){
 }
 
 export function remover_porvalor(vetor, qtd){
-    const antigo_vetor = vetor
-    let valor_remv 
-    vetor = []
+    const tamanho_vetor = vetor.length
 
     for(let i = qtd; i>0;i--){
-        valor_remv = get_number('digite um valor para ser removido:  ')
-        for(let item of antigo_vetor){
-            if(item != valor_remv){
-                vetor.push(item)
+        let valor_remv = get_number('Digite um valor para ser removido:  ')
+        for(let j = tamanho_vetor; j>0;j--){
+            if(vetor[j] == valor_remv){
+                vetor.splice(j,1)
             }
         }
     }
     return vetor
 }
 
+export function remover_porposicao(vetor,qtd){
+    const tamanho_vetor = vetor.length
+
+    for(let i = qtd; i>0;i--){
+        let indice_remv = get_number('Digite o índice do valor a ser removido (desconsidere já removidos da contagem):  ')
+        while(indice_remv > (vetor.length -1) || indice_remv < -(vetor.length + 1) ){
+            mostre(`índice inválido!`)
+            indice_remv = get_number('Digite o índice do valor a ser removido (desconsidere já removidos da contagem) :  ')
+        }
+        for(let j = (tamanho_vetor -1); j>=0;j--){
+            if(j == indice_remv){
+                vetor.splice(j,1)
+            }
+        }
+    }
+    return vetor
+}
+
+export function editar_porposicao(vetor, indice_a_editar){
+    const tamanho_vetor = vetor.length 
+    let new_valor 
+    while(indice_a_editar > (tamanho_vetor -1) || indice_a_editar < -(tamanho_vetor + 1) ){
+        mostre(`índice inválido!`)
+        indice_a_editar = get_number('Digite o índice do valor a ser editado:  ')
+    }
+    for(let j = (tamanho_vetor -1); j>=0;j--){
+        if(j == indice_a_editar){
+           new_valor = get_number('Digite o novo valor: ') 
+           vetor[indice_a_editar] = new_valor
+        }
+    }
+    return vetor
+
+}
 export function salvar_vetor(vetor){
 
     const listaEmString = vetor.join('\n');
