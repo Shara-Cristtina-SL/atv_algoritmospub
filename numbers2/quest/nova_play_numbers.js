@@ -1,6 +1,6 @@
 import {mostre,get_number_inrange,get_number, limpar_tela,enter_para_continuar, get_text, positive_number} from '../quest/utils.js'
-import { chamar_sub_opcoes,adcionar_valores,filtrar,reduzir,contar,remover_porvalor,remover_porposicao, resetar_vetor,embaralhar_vetor,bubble_sort,somar_elementos, calcular_media_elementos, chamar_sub10_opcoes, salvar_vetor, editar_porposicao } from '../vetor_funcionalidades.js'
-import {eh_negativo, eh_positivo} from '../quest/vetor_utils.js'
+import { chamar_sub_opcoes,filtrar,contar,reduzir,adcionar_valores,remover_porvalor,remover_porposicao, resetar_vetor,embaralhar_vetor,bubble_sort, somar_elementos, calcular_media_elementos, chamar_sub10_opcoes, salvar_vetor, editar_porposicao } from './novo_vetor_func.js'
+import { contar_iguais, eh_positivo, eh_negativo, tem_maisdeum } from './vetor_utils.js'
 
 function main(lista_vetor = []){
 
@@ -8,7 +8,6 @@ function main(lista_vetor = []){
     let opcao_escolhida = get_number_inrange(opcoes,1,16)
     let sub_opcao_escolhida
     let sub_opcao10_escolhida
-
 
     limpar_tela()
 
@@ -51,8 +50,16 @@ function main(lista_vetor = []){
             MENOR VALOR: ${menor_elemento}  
             POSIÇÃO: ${posicao_do_menor}
             `)
+            if(tem_maisdeum(lista_vetor, posicao_domaior)||tem_maisdeum(lista_vetor,posicao_do_menor)){
+                const qtd_repetidos_maior = contar_iguais(lista_vetor,maior_elemento)
+                const qtd_repetidos_menor = contar_iguais(lista_vetor, menor_elemento)
+                
+                mostre(`
+                    Há ${qtd_repetidos_maior} número(s) ${maior_elemento}
+                    Há ${qtd_repetidos_menor} número(s) ${menor_elemento}
+                    `)
+            }
     }
-
     else if(opcao_escolhida == 6){
         const somatorio = somar_elementos(lista_vetor)
 
@@ -117,15 +124,19 @@ function main(lista_vetor = []){
     }else if(opcao_escolhida == 11){
         const qtd_new_valores = positive_number('Digite quantos valores quer adcionar:  ')
         lista_vetor = adcionar_valores(lista_vetor, qtd_new_valores)
+
     }else if(opcao_escolhida == 12){
         const qtd_removidos = positive_number('Digite a quantidade de números a serem removidos:  ')
         lista_vetor = remover_porvalor(lista_vetor, qtd_removidos)
+
     }else if(opcao_escolhida == 13){
         const qtd_removidos = positive_number('Digite a quantidade de números a serem removidos:  ')
         lista_vetor = remover_porposicao(lista_vetor, qtd_removidos)
+
     }else if(opcao_escolhida == 14){
         const posicao = get_number('Digite o índice do valor a ser editado: ')
         lista_vetor = editar_porposicao(lista_vetor,posicao)
+        
     }else if(opcao_escolhida == 15){
         salvar_vetor(lista_vetor)
     }
@@ -185,6 +196,7 @@ function menu(numero){
 
         >>>  `
     }
+    
  }
  
  main()

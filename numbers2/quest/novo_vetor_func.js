@@ -1,7 +1,49 @@
 
-import {mostre, positive_number,get_number, get_text, enter_para_continuar} from './utils.js'
+import {mostre,get_number_inrange, limpar_tela, positive_number,get_number, get_text, enter_para_continuar} from './utils.js'
 import {readFileSync,writeFileSync} from 'fs'
-import {eh_positivo, tem_maisdeum, mostrar_posicoes} from '../quest/vetor_utils.js'
+import {eh_positivo} from '../quest/vetor_utils.js'
+
+export function contar(vetor,criterio){
+    let qtd = 0
+
+    for(let elemento of vetor){
+        if(criterio(elemento)){
+            qtd++
+        }
+    }
+    return qtd
+}
+
+export function reduzir(vetor, funcao, valor_inicial, eh_posicao){
+    let acumulado = valor_inicial
+    let posicao
+  
+    for (let i = 0; i < vetor.length; i++){
+      acumulado = funcao(acumulado, vetor[i])
+
+      if(eh_posicao){
+        if(vetor[i] == acumulado){
+            posicao = i
+        }
+      }
+    }
+
+    if(eh_posicao){ 
+        return posicao
+    }
+    
+    return acumulado
+  }
+  export function filtrar(vetor, criterio){
+    const nova_lista = []
+
+    for (let numero of vetor){
+     if (criterio(numero)){
+      nova_lista.push(numero)
+     } 
+    }
+    return nova_lista
+}
 
 
 export function sub1_opcao1(){
@@ -82,76 +124,6 @@ export function resetar_vetor(vetor){
 
 }
 
-export function contar_elementos(vetor){
-    const tamanho_vetor = vetor.length
-
-    return tamanho_vetor
-}
-
-export function buscar_maior_vetor_posicao(vetor){
-    let elemento_anterior = vetor[0]
-    let elemento_atual = vetor[0]
-    let maior_elemento = vetor[0]
-    let posicao_domaior
-
-    for(let i = 0; i < vetor.length; i++){
-        elemento_atual = vetor[i]
-
-        if(elemento_atual > maior_elemento){
-            maior_elemento = elemento_atual
-            posicao_domaior = i
-        }
-
-        elemento_anterior = elemento_atual
-    }
-
-    return posicao_domaior
-}
-
-export function reduzir(vetor, funcao, valor_inicial, eh_posicao){
-    let acumulado = valor_inicial
-    let posicao
-  
-    for (let i = 0; i < vetor.length; i++){
-      acumulado = funcao(acumulado, vetor[i])
-
-      if(eh_posicao){
-        if(vetor[i] == acumulado){
-            posicao = i
-        }
-      }
-    }
-
-    if(eh_posicao){
-        if(tem_maisdeum(vetor, acumulado) == true){
-            const posicoes = mostrar_posicoes(vetor, acumulado)
-           return posicoes
-        }else{
-            return posicao
-        }
-    }
-    
-    return acumulado
-  }
-
-export function buscar_menor_vetor_posicao(vetor){
-    let elemento_atual = vetor[0]
-    let menor_elemento = reduzir(lista_vetor, (acc, v) => v > acc ? v : acc, lista_vetor[0])
-    const tamanho_vetor = contar_elementos(vetor)
-    let posicao_do_menor
-
-    for(let i = 0; i < tamanho_vetor; i++){
-        elemento_atual = vetor[i]
-
-        if(elemento_atual < menor_elemento){
-            menor_elemento = elemento_atual
-            posicao_do_menor = i
-        }
-    }
-
-    return posicao_do_menor
-}
-
 export function somar_elementos(vetor){
     let somatorio = 0
 
@@ -169,41 +141,26 @@ export function calcular_media_elementos(vetor){
     return somatorio/tamanho_vetor
 }
 
-
-
-export function contar(vetor,criterio){
-    let qtd = 0
-
+export function buscar_positivos(vetor){
+    const lista_positivos = []
     for(let elemento of vetor){
-        if(criterio(elemento)){
-            qtd++
+        if(eh_positivo(elemento) == true){
+            lista_positivos.push(elemento)
         }
     }
 
-    return qtd
+    return lista_positivos
 }
 
-export function filtrar(vetor, criterio){
-    const nova_lista = []
-
-    for (let numero of vetor){
-     if (criterio(numero)){
-      nova_lista.push(numero)
-     } 
-
-    return nova_lista
-    }
-}
-
-export function contar_negativos(vetor){
-    let qtd_negativos = 0
-
+export function buscar_negativos(vetor){
+    const lista_negativos = []
     for(let elemento of vetor){
-        if(eh_positivo(elemento) === false && elemento != 0){
-            qtd_negativos++
+        if(eh_positivo(elemento) == false && elemento != 0){
+            lista_negativos.push(elemento)
         }
     }
-    return qtd_negativos
+
+    return lista_negativos
 }
 
 export function atualizar_vetor(vetor,regra){
@@ -233,6 +190,20 @@ export function atualizar_vetor_se(vetor,regra,criterio){
 
     return vetor_atualizado
 }
+// Para evitar floats desnecessários
+function aplicar_fracao(vetor,numerador,denominador){
+    let vetor_anterior = vetor
+        vetor = []
+        for(let valor of vetor_anterior){
+
+            if((valor * (numerador/denominador)) % Math.floor(valor * (numerador/denominador)) != 0){
+                vetor.push(Number((valor * (numerador/denominador)).toFixed(2) ))
+            }else{
+                vetor.push(valor * (numerador/denominador))
+            }
+        }
+        return vetor
+}
 export function embaralhar_vetor(vetor){
     for (let i = vetor.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -256,16 +227,7 @@ export function chamar_sub10_opcoes(sub_opcao,vetor,fator,expoente,fracao,min,ma
         let numerador = Number( fracao[0] )
         let denominador = Number(fracao[1])
 
-        let vetor_anterior = vetor
-        vetor = []
-        for(let valor of vetor_anterior){
-
-            if((valor * (numerador/denominador)) % Math.floor(valor * (numerador/denominador)) != 0){
-             vetor.push(Number((valor * (numerador/denominador)).toFixed(2) ))
-            }else{
-                vetor.push(valor * (numerador/denominador))
-            }
-        }
+        vetor = aplicar_fracao(vetor, numerador, denominador)
     
     }else if(sub_opcao == 4,min,max){
         const criterio = v => v < 0
@@ -321,18 +283,18 @@ export function adcionar_valores(vetor,qtd){
     return vetor
 }
 
-export function remover_porvalor(vetor, qtd){
-    const tamanho_vetor = vetor.length
-
-    for(let i = qtd; i>0;i--){
-        let valor_remv = get_number('Digite um valor para ser removido:  ')
-        for(let j = tamanho_vetor; j>0;j--){
-            if(vetor[j] == valor_remv){
-                vetor.splice(vetor[j],1)
+export function remover_porvalor(vetor, qtd) {
+    for (let i = 0; i < qtd; i++) {
+        let valor_remv = get_number('Digite um valor para ser removido:  ');
+        let j = vetor.length - 1; 
+        while (j >= 0) {
+            if (vetor[j] === valor_remv) {
+                vetor.splice(j, 1); 
             }
+            j-- 
         }
     }
-    return vetor
+    return vetor;
 }
 
 export function remover_porposicao(vetor,qtd){
@@ -378,5 +340,4 @@ export function salvar_vetor(vetor){
 
     console.log('Lista salva com sucesso em', nomeDoArquivo);
 }
-
 
